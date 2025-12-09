@@ -132,8 +132,6 @@ io.to(socket.mesaId).emit("state", state);
 // intervalo del timer
 setInterval(() => {
 
-  if (!socket.mesaId || !mesas[socket.mesaId]) return;
-
   for (const mesaId in mesas) {
     const state = mesas[mesaId];
     if (state.running && state.timer > 0) {
