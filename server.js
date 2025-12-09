@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http, { cors: { origin: '*' } });
+const mesas = {};
+
 
 app.use(express.static('public'));
 
@@ -16,6 +18,21 @@ let state = {
 
 io.on('connection', socket => {
 
+  socket.on("joinMesa", mesaId => {
+
+    socket.join(mesaId);
+
+    if (!mesas[mesaId]) {
+        mesas[mesaId] = crearEstadoInicial();
+        generateJudges(mesas[mesaId].judgeCount, mesas[mesaId]);
+    }
+
+    socket.mesaId = mesaId; // guardamos la mesa en el socket
+
+    socket.emit("state", mesas[mesaId]);
+});
+
+
   // enviar estado inicial al conectarse
   socket.emit('state', state);
 
@@ -24,7 +41,9 @@ io.on('connection', socket => {
     if (n === 3 || n === 4) {
         state.judgeCount = n;
         generateJudges(n);
-        io.emit("state", state);
+      const state = mesas[socket.mesaId];
+io.to(socket.mesaId).emit("state", state);
+
     }
   });
 
@@ -41,7 +60,9 @@ socket.on('reset', () => {
         state.judges[j].blue = 0;
     }
 
-    io.emit('state', state);   // avisamos inmediatamente
+   const state = mesas[socket.mesaId];
+io.to(socket.mesaId).emit("state", state);
+   // avisamos inmediatamente
 });
 
 
@@ -55,7 +76,9 @@ socket.on('reset', () => {
     if (data.color === 'red')  state.judges[j].red++;
     if (data.color === 'blue') state.judges[j].blue++;
 
-    io.emit('state', state);
+   const state = mesas[socket.mesaId];
+io.to(socket.mesaId).emit("state", state);
+
   });
 
   // FALTAS
@@ -74,25 +97,42 @@ socket.on('reset', () => {
   socket.on('timer', t => {
     state.timer = t.value;
     state.running = t.running;
-    io.emit('state', state);
+    const state = mesas[socket.mesaId];
+io.to(socket.mesaId).emit("state", state);
+
   });
 });
 
 
 // intervalo del timer
 setInterval(() => {
-  if (state.running && state.timer > 0) {
-    state.timer--;
-    io.emit('state', state);
+  for (const mesaId in mesas) {
+    const state = mesas[mesaId];
+    if (state.running && state.timer > 0) {
+      state.timer--;
+      io.to(mesaId).emit("state", state);
+    }
   }
 }, 1000);
 
-function generateJudges(n) {
+
+function crearEstadoInicial() {
+  return {
+    faults: { red: 0, blue: 0 },
+    judges: {},
+    judgeCount: 4,
+    timer: 60,
+    running: false
+  };
+}
+
+function generateJudges(n, state) {
     state.judges = {};
     for (let i = 1; i <= n; i++) {
         state.judges[i] = { red: 0, blue: 0 };
     }
 }
+
 
 generateJudges(state.judgeCount);
 

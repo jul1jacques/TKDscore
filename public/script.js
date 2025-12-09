@@ -2,11 +2,16 @@ const socket = io();
 let state = {};
 let time = 60;
 
+const params = new URLSearchParams(window.location.search);
+const mesaId = params.get("mesa") || "1"; // si no hay, usa mesa 1
+
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById("judgeSelect").addEventListener("change", e => {
         socket.emit("setJudges", Number(e.target.value));
     });
 });
+
+socket.emit("joinMesa", mesaId);
 
 document.addEventListener('keydown', e => {
 
