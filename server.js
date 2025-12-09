@@ -18,7 +18,17 @@ let state = {
 
 io.on('connection', socket => {
 
+  socket.on("state", s => {
+    if (!s || !s.judges) return;
+    state = s;
+    update();
+});
+
+
   socket.on("joinMesa", mesaId => {
+
+    if (!socket.mesaId || !mesas[socket.mesaId]) return;
+
 
     socket.join(mesaId);
 
@@ -38,6 +48,9 @@ io.on('connection', socket => {
 
   // CAMBIAR CANTIDAD DE JUECES (única versión correcta)
   socket.on("setJudges", n => {
+
+    if (!socket.mesaId || !mesas[socket.mesaId]) return;
+
     if (n === 3 || n === 4) {
         state.judgeCount = n;
         generateJudges(n);
@@ -49,6 +62,9 @@ io.to(socket.mesaId).emit("state", state);
 
   // RESET
 socket.on('reset', () => {
+
+  if (!socket.mesaId || !mesas[socket.mesaId]) return;
+
 
     // Apagamos el timer PRIMERO
     state.running = false;
@@ -69,6 +85,9 @@ io.to(socket.mesaId).emit("state", state);
 
   // PUNTOS
   socket.on('punto', data => {
+
+    if (!socket.mesaId || !mesas[socket.mesaId]) return;
+
     const j = parseInt(data.juez);
 
     if (!state.judges[j]) return;
@@ -83,6 +102,9 @@ io.to(socket.mesaId).emit("state", state);
 
   // FALTAS
   socket.on('fault', color => {
+
+    if (!socket.mesaId || !mesas[socket.mesaId]) return;
+
     state.faults[color]++;
     if (state.faults[color] === 3) {
       for (let j in state.judges) {
@@ -95,6 +117,9 @@ io.to(socket.mesaId).emit("state", state);
 
   // TIMER
   socket.on('timer', t => {
+
+    if (!socket.mesaId || !mesas[socket.mesaId]) return;
+
     state.timer = t.value;
     state.running = t.running;
     const state = mesas[socket.mesaId];
@@ -106,6 +131,9 @@ io.to(socket.mesaId).emit("state", state);
 
 // intervalo del timer
 setInterval(() => {
+
+  if (!socket.mesaId || !mesas[socket.mesaId]) return;
+
   for (const mesaId in mesas) {
     const state = mesas[mesaId];
     if (state.running && state.timer > 0) {
@@ -132,6 +160,8 @@ function generateJudges(n, state) {
         state.judges[i] = { red: 0, blue: 0 };
     }
 }
+
+
 
 
 http.listen(3000, () => console.log('Server TKD en 3000'));

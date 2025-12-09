@@ -1,4 +1,14 @@
 const socket = io();
+
+const params = new URLSearchParams(window.location.search);
+const mesaId = params.get("mesa");
+
+if (!mesaId) {
+  alert("Falta el número de mesa en el link");
+}
+
+socket.emit("joinMesa", mesaId);
+const socket = io();
 let state = {};
 let time = 60;
 
