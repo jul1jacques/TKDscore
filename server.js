@@ -134,6 +134,4 @@ function generateJudges(n, state) {
 }
 
 
-generateJudges(state.judgeCount);
-
 http.listen(3000, () => console.log('Server TKD en 3000'));
