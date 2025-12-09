@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Juez</title>
+  <style>
+    body {
+      background: white;
+      text-align: center;
+      font-family: Arial;
+      user-select: none;
+      margin: 0;
+      padding: 20px;
+    }
+    #juezID {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+    #estado {
+      font-size: 16px;
+      margin-bottom: 20px;
+      color: green;
+    }
+    .btn {
+      width: 46%;
+      height: 45vh;
+      font-size: 40px;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      margin: 5px;
+    }
+    #redBtn  { background:#e74c3c; }
+    #blueBtn { background:#3498db; }</style>
+</head>
+<body>
+
+  <div id="juezID">Juez ?</div>
+  <div id="estado">Conectando...</div>
+
+  <button id="redBtn"  class="btn" onclick="puntoRojo()">ROJO</button>
+  <button id="blueBtn" class="btn" onclick="puntoAzul()">AZUL</button>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="script_juez.js"></script>
+</body>
+</html>

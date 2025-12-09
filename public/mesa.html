@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<title>Mesa</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- SELECTOR DE JUECES -->
+<div class="selectorJueces">
+    <label>Cantidad de jueces:</label>
+    <select id="judgeSelect">
+        <option value="4">4 Jueces</option>
+        <option value="3">3 Jueces</option>
+    </select>
+</div>
+
+<!-- CONTENEDOR DE JUECES -->
+<div id="judgesContainer"></div>
+
+<!-- TIMER -->
+<div id="timer" class="timer">00:00</div>
+
+<!-- CENTRO -->
+<div id="center">
+  
+  <!-- COMPETIDOR ROJO -->
+  <div class="competidor">
+    <div class="circle red">
+        <span id="countRed">0</span>
+    </div>
+
+    <div class="total" id="totalRed">0</div>
+
+    <div class="faltas" id="faltasRed">Faltas: ⚪⚪⚪</div>
+
+    <button onclick="fault('red')" class="fault red">Falta Rojo</button>
+  </div>
+
+  <img id="logoEscuela" src="escudo.png" />
+
+  <!-- COMPETIDOR AZUL -->
+  <div class="competidor">
+    <div class="circle blue">
+        <span id="countBlue">0</span>
+    </div>
+
+    <div class="total" id="totalBlue">0</div>
+
+    <div class="faltas" id="faltasBlue">Faltas: ⚪⚪⚪</div>
+
+    <button onclick="fault('blue')" class="fault blue">Falta Azul</button>
+  </div>
+
+</div>
+
+<!-- BOTÓN REINICIO -->
+<button id="resetBtn" class="resetBtn" onclick="resetCombate()">Reiniciar Combate</button>
+
+<!-- TIEMPO DEL ROUND -->
+<div id="timeSelector" class="timeSelector">
+    <label>Duración del round:</label>
+    <select id="roundTime">
+        <option value="30">30 segundos</option>
+        <option value="60" selected>1 minuto</option>
+        <option value="90">1 minuto 30 segundos</option>
+    </select>
+    <button onclick="setRoundTime()">Aplicar tiempo</button>
+</div>
+
+<!-- ALERTA PENALIZACIÓN -->
+<div id="alertaPenalizacion" class="alerta"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
