@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Subir Excel</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+</head>
+<body>
+
+<h2>Subir Excel de Competidores</h2>
+
+<form id="formExcel">
+    <input type="file" name="archivo" accept=".xlsx,.xls" required>
+    <button type="submit">Subir</button>
+</form>
+
+<div id="resultado"></div>
+
+<script>
+document.getElementById("formExcel").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+
+    const res = await fetch("/subir-excel", {
+        method: "POST",
+        body: formData
+    });
+
+    if (!res.ok) {
+    const texto = await res.text();
+    alert("Error en servidor. Mirá la consola.");
+    return;
+}
+
+const data = await res.json();
+
+    document.getElementById("resultado").innerText =
+        "Competidores: " + data.cantidad +
+        " | Categorías detectadas: " + data.categoriasDetectadas;
+});
+
+
+
+</script>
+
+</body>
+</html>

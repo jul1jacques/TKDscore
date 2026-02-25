@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Llaves Generadas</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <style>
+        body{
+            background:#a9a9a9;
+            font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            font-size: medium;
+            padding:40px;
+        }
+
+        h1{
+            text-align:center;
+            margin-bottom:50px;
+        }
+
+        .categoria{
+            margin-bottom:80px;
+        }
+
+        .categoria h2{
+            margin-bottom:20px;
+        }
+
+        .rondas{
+            display:flex;
+            gap:60px;
+        }
+
+        .columna{
+            display:flex;
+            flex-direction:column;
+            gap:20px;
+            align-items:center;
+        }
+
+        .tituloRonda{
+            background:#111;
+            color:white;
+            padding:8px 18px;
+            border-radius:8px;
+            font-weight:bold;
+            margin-bottom:15px;
+        }
+
+        .combate{
+            background:white;
+            padding:15px 20px;
+            border-radius:12px;
+            box-shadow:0 4px 12px rgba(0,0,0,0.1);
+            min-width:220px;
+            text-align:center;
+        }
+
+        .rojo{
+            color:#e33;
+            font-weight:bold;
+        }
+
+        .azul{
+            color:#2979ff;
+            font-weight:bold;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Llaves del Torneo</h1>
+
+<div id="llaves"></div>
+
+<script>
+async function cargar(){
+
+    const res = await fetch("/brackets");
+    const data = await res.json();
+
+    const contenedor = document.getElementById("llaves");
+    contenedor.innerHTML = "";
+
+    for(const categoria in data){
+
+        const bloque = document.createElement("div");
+        bloque.className = "categoria";
+
+        const titulo = document.createElement("h2");
+        titulo.innerText = categoria;
+        bloque.appendChild(titulo);
+
+        const rondasDiv = document.createElement("div");
+        rondasDiv.className = "rondas";
+
+        data[categoria].forEach((ronda, rIndex) => {
+
+            const col = document.createElement("div");
+            col.className = "columna";
+
+            const tituloRonda = document.createElement("div");
+            tituloRonda.className = "tituloRonda";
+
+            if(rIndex === 0) tituloRonda.innerText = "CUARTOS";
+            else if(rIndex === 1) tituloRonda.innerText = "SEMIFINAL";
+            else tituloRonda.innerText = "FINAL";
+
+            col.appendChild(tituloRonda);
+
+            ronda.forEach(combate => {
+
+                const card = document.createElement("div");
+                card.className = "combate";
+
+                const rojo = combate.rojo;
+                const azul = combate.azul;
+
+                const nombreRojo = rojo
+                    ? `${rojo.nombre} ${rojo.apellido}`
+                    : "Libre";
+
+                const nombreAzul = azul
+                    ? `${azul.nombre} ${azul.apellido}`
+                    : "Libre";
+
+                card.innerHTML = `
+                    <div style="color:red">${nombreRojo}</div>
+                    <div>vs</div>
+                    <div style="color:blue">${nombreAzul}</div>
+                `;
+
+                col.appendChild(card);
+            });
+
+            rondasDiv.appendChild(col);
+        });
+
+        bloque.appendChild(rondasDiv);
+        contenedor.appendChild(bloque);
+    }
+}
+
+cargar();
+</script>
+
+</body>
+</html>

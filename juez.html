@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <link rel="icon" type="image/png" href="/favicon.png">
+
+  <meta name="viewport" 
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<meta charset="UTF-8">
+<title>Juez - TKDscore</title>
+<style>
+  body {
+    touch-action: manipulation;
+}
+button {
+    touch-action: manipulation;
+}
+
+  body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction:row;
+    font-family: Arial;
+  }
+  #juezLabel {
+    text-align: center;
+    font-size: 30px;
+    padding: 10px;
+    font-weight: bold;
+  }
+  .vote {
+    flex: 1;
+    font-size: 60px;
+    border: none;
+    color: white;
+  }
+  .red { background: #e33; }
+  .blue { background: #39f; }
+</style>
+</head>
+<body>
+
+
+
+<button class="vote red" onclick="votar('red')">ROJO</button>
+<button class="vote blue" onclick="votar('blue')">AZUL</button>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="juez.js"></script>
+</body>
+</html>

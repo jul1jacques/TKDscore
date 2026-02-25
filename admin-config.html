@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Configuración Torneo</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<script src="/socket.io/socket.io.js"></script>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f4f4f4;
+}
+
+header {
+    background: #111;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    font-size: 20px;
+}
+
+.tabs {
+    display: flex;
+    background: #222;
+}
+
+.tab {
+    flex: 1;
+    padding: 12px;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+    border-right: 1px solid #444;
+}
+
+.tab.active {
+    background: #e33;
+}
+
+.content {
+    display: none;
+    padding: 20px;
+}
+
+.content.active {
+    display: block;
+}
+
+button {
+    padding: 8px 12px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+input {
+    padding: 5px;
+    margin: 3px;
+}
+</style>
+</head>
+<body>
+
+<header>Configuración del Torneo</header>
+
+<div class="tabs">
+    <div class="tab active" onclick="cambiarTab('edades')">Edades</div>
+    <div class="tab" onclick="cambiarTab('cinturones')">Cinturones</div>
+    <div class="tab" onclick="cambiarTab('pesos')">Pesos</div>
+    <div class="tab" onclick="cambiarTab('combate')">Combate</div>
+</div>
+
+<!-- EDADES -->
+<div id="edades" class="content active">
+    <h2>Rangos de Edad</h2>
+    <div id="listaEdades"></div>
+    <button onclick="agregarEdad()">Agregar Rango</button>
+</div>
+
+<!-- CINTURONES -->
+<div id="cinturones" class="content">
+    <h2>Grupos de Cinturones</h2>
+    <div id="listaCinturones"></div>
+    <button onclick="agregarGrupoCinturon()">Agregar Grupo</button>
+</div>
+
+<!-- PESOS -->
+<div id="pesos" class="content">
+    <h2>Pesos por Género</h2>
+    <select id="selectorGenero" onchange="renderPesos()">
+        <option value="Masculino">Masculino</option>
+        <option value="Femenino">Femenino</option>
+    </select>
+    <div id="listaPesos"></div>
+    <button onclick="agregarPeso()">Agregar Rango Peso</button>
+</div>
+
+<!-- COMBATE -->
+<div id="combate" class="content">
+    <h2>Configuración de Combate por Edad</h2>
+    <div id="listaCombate"></div>
+</div>
+
+<button onclick="guardarTodo()" style="margin:20px;">Guardar Configuración</button>
+
+<script>
+const socket = io();
+let configuracion = { edades: [], cinturones: {}, pesos: {Masculino:[], Femenino:[]}, combate:{} };
+
+socket.emit("obtenerConfiguracion");
+
+socket.on("configuracionActual", data => {
+
+    if (data && typeof data === "object") {
+        configuracion = data;
+        console.log("CONFIG CARGADA EN FRONTEND:", configuracion);
+    } else {
+        console.log("No había configuración guardada");
+    }
+
+    renderTodo();
+});
+
+function cambiarTab(tabId) {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".content").forEach(c => c.classList.remove("active"));
+
+    event.target.classList.add("active");
+    document.getElementById(tabId).classList.add("active");
+}
+
+function renderTodo(){
+    renderEdades();
+    renderCinturones();
+    renderPesos();
+    renderCombate();
+}
+
+/* ========================= */
+/* EDADES */
+/* ========================= */
+
+function agregarEdad(){
+    configuracion.edades.push({nombre:"", min:0, max:0});
+    renderEdades();
+}
+
+function renderEdades(){
+    const div = document.getElementById("listaEdades");
+    div.innerHTML = "";
+
+    configuracion.edades.forEach((e,i)=>{
+        div.innerHTML += `
+            <div>
+                <input placeholder="Nombre" value="${e.nombre}" onchange="configuracion.edades[${i}].nombre=this.value">
+                <input type="number" placeholder="Min" value="${e.min}" onchange="configuracion.edades[${i}].min=parseInt(this.value)">
+                <input type="number" placeholder="Max" value="${e.max}" onchange="configuracion.edades[${i}].max=parseInt(this.value)">
+                <button onclick="configuracion.edades.splice(${i},1); renderEdades()">X</button>
+            </div>
+        `;
+    });
+}
+
+/* ========================= */
+/* CINTURONES */
+/* ========================= */
+
+function agregarGrupoCinturon(){
+    const nombre = prompt("Nombre del grupo:");
+    if(!nombre) return;
+    configuracion.cinturones[nombre] = [];
+    renderCinturones();
+}
+
+function renderCinturones(){
+    const div = document.getElementById("listaCinturones");
+    div.innerHTML = "";
+
+    for(let grupo in configuracion.cinturones){
+
+        div.innerHTML += `
+            <div style="border:1px solid #ccc; padding:10px; margin-bottom:15px; background:#fff;">
+                <h4 contenteditable="true"
+                    onblur="renombrarGrupo('${grupo}', this.innerText)">
+                    ${grupo}
+                </h4>
+
+                <div id="cinturones-${grupo}"></div>
+
+                <button onclick="agregarCinturon('${grupo}')">
+                    + Agregar cinturón
+                </button>
+
+                <button onclick="eliminarGrupo('${grupo}')" 
+                        style="background:#e33;color:white;">
+                    Eliminar grupo
+                </button>
+            </div>
+        `;
+
+        const cont = document.getElementById(`cinturones-${grupo}`);
+
+        configuracion.cinturones[grupo].forEach((c,i)=>{
+            cont.innerHTML += `
+                <div>
+                    <input value="${c}" 
+                        onchange="configuracion.cinturones['${grupo}'][${i}] = this.value">
+                    <button onclick="configuracion.cinturones['${grupo}'].splice(${i},1); renderCinturones()">X</button>
+                </div>
+            `;
+        });
+    }
+}
+
+/* ========================= */
+/* PESOS */
+/* ========================= */
+
+function agregarPeso(){
+    const genero = document.getElementById("selectorGenero").value;
+    configuracion.pesos[genero].push({min:0,max:0});
+    renderPesos();
+}
+
+function renderPesos(){
+    const genero = document.getElementById("selectorGenero").value;
+    const div = document.getElementById("listaPesos");
+    div.innerHTML = "";
+
+    configuracion.pesos[genero].forEach((p,i)=>{
+        div.innerHTML += `
+            <div>
+                <input type="number" value="${p.min}" onchange="configuracion.pesos['${genero}'][${i}].min=parseInt(this.value)">
+                <input type="number" value="${p.max}" onchange="configuracion.pesos['${genero}'][${i}].max=parseInt(this.value)">
+                <button onclick="configuracion.pesos['${genero}'].splice(${i},1); renderPesos()">X</button>
+            </div>
+        `;
+    });
+}
+
+/* ========================= */
+/* COMBATE */
+/* ========================= */
+
+function renderCombate(){
+    const div = document.getElementById("listaCombate");
+    div.innerHTML = "";
+
+    configuracion.edades.forEach(e => {
+
+        if(!configuracion.combate[e.nombre]){
+            configuracion.combate[e.nombre] = {};
+        }
+
+        div.innerHTML += `<h3>${e.nombre}</h3>`;
+
+        for(let grupo in configuracion.cinturones){
+
+            if(!configuracion.combate[e.nombre][grupo]){
+                configuracion.combate[e.nombre][grupo] = {
+                    roundTime:60,
+                    rounds:2,
+                    rest:30,
+                    judges:3
+                };
+            }
+
+            const c = configuracion.combate[e.nombre][grupo];
+
+            div.innerHTML += `
+                <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px; background:#fff;">
+                    <strong>${grupo}</strong><br>
+                    RoundTime 
+                    <input type="number" value="${c.roundTime}" 
+                        onchange="configuracion.combate['${e.nombre}']['${grupo}'].roundTime=parseInt(this.value)">
+                    
+                    Rounds 
+                    <input type="number" value="${c.rounds}" 
+                        onchange="configuracion.combate['${e.nombre}']['${grupo}'].rounds=parseInt(this.value)">
+                    
+                    Descanso 
+                    <input type="number" value="${c.rest}" 
+                        onchange="configuracion.combate['${e.nombre}']['${grupo}'].rest=parseInt(this.value)">
+                    
+                    Jueces sugeridos 
+                    <input type="number" value="${c.judges}" 
+                        onchange="configuracion.combate['${e.nombre}']['${grupo}'].judges=parseInt(this.value)">
+                </div>
+            `;
+        }
+    });
+}
+
+/* ========================= */
+/* GUARDAR */
+/* ========================= */
+
+function guardarTodo(){
+    socket.emit("guardarConfiguracion", configuracion);
+    alert("Configuración guardada");
+}
+
+
+function agregarCinturon(grupo){
+    configuracion.cinturones[grupo].push("");
+    renderCinturones();
+}
+
+function eliminarGrupo(grupo){
+    delete configuracion.cinturones[grupo];
+    renderCinturones();
+}
+
+function renombrarGrupo(viejoNombre, nuevoNombre){
+    if(viejoNombre === nuevoNombre) return;
+
+    configuracion.cinturones[nuevoNombre] = configuracion.cinturones[viejoNombre];
+    delete configuracion.cinturones[viejoNombre];
+    renderCinturones();
+}
+
+
+
+</script>
+
+</body>
+</html>

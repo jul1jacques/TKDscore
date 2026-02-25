@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Formas - Mesa</title>
+    <link rel="stylesheet" href="formas.css">
+</head>
+<body>
+
+<div class="header">
+    <div id="categoria"></div>
+    <div id="ronda"></div>
+</div>
+
+<div class="topBarFormas">
+
+    <select id="selectCategoriaFormas"></select>
+
+    <button onclick="cargarCategoriaFormas()" class="btnLoad">
+        CARGAR CATEGORÍA
+    </button>
+
+</div>
+
+<div class="vsContainer">
+
+<div class="competidor rojo">
+    <div id="nombreRojo" class="nombre"></div>
+    <button onclick="ganador('red')" class="btnRed">
+        GANADOR ROJO
+    </button>
+</div>
+
+<div class="vs">VS</div>
+
+<div class="competidor azul">
+    <div id="nombreAzul" class="nombre"></div>
+    <button onclick="ganador('blue')" class="btnBlue">
+        GANADOR AZUL
+    </button>
+</div>
+
+</div>
+
+<div class="footer">
+    <button onclick="siguienteCombate()" class="btnNext">
+        SIGUIENTE COMBATE
+    </button>
+</div>
+
+<div id="overlayGanadorFormas" class="overlay hidden">
+    <div id="textoGanadorFormas"></div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/formas.js"></script>
+</body>
+</html>

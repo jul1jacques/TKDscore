@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Categorías Detectadas</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+</head>
+<body>
+
+<h2>Categorías Detectadas</h2>
+
+<div id="listaCategorias"></div>
+
+<button onclick="confirmar()">Confirmar Torneo</button>
+
+<script>
+async function cargarCategorias(){
+    const res = await fetch("/categorias-propuestas");
+    const data = await res.json();
+
+    const div = document.getElementById("listaCategorias");
+    div.innerHTML = "";
+
+    for(let cat in data){
+
+        const cantidad = data[cat].length;
+        const alerta = cantidad <= 1 ? " ⚠ POCA GENTE" : "";
+
+        div.innerHTML += `
+            <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+                <strong>${cat}</strong> 
+                (${cantidad}) ${alerta}
+                <br>
+                ${cantidad <= 2 ? `
+                    Fusionar con:
+                    <select id="fusion-${cat}">
+                        ${Object.keys(data)
+                            .filter(c => c !== cat)
+                            .map(c => `<option value="${c}">${c}</option>`)
+                            .join("")}
+                    </select>
+                    <button onclick="fusionar('${cat}')">
+                        Fusionar
+                    </button>
+                ` : ""}
+            </div>
+        `;
+    }
+}
+
+async function fusionar(origen){
+
+    const select = document.getElementById("fusion-" + origen);
+    const destino = select.value;
+
+    await fetch("/fusionar-categorias", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ origen, destino })
+    });
+
+    cargarCategorias();
+}
+async function confirmar(){
+
+    const res = await fetch("/confirmar-torneo", {
+        method: "POST"
+    });
+
+    const data = await res.json();
+
+    alert("Torneo confirmado con " + data.categoriasFinales + " categorías");
+}
+
+cargarCategorias();
+</script>
+
+</body>
+</html>

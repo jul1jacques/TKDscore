@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<title>Mesa - TKDscore</title>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="formas.css">
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/categories.js"></script>
+<script src="/bracket.js"></script>
+<script src="script-mesa.js"></script>
+
+</head>
+
+<body onclick="habilitarSonido()">
+
+
+
+<div class="topBar">
+
+  <div class="leftZone">
+      <select id="selectCategoria"></select>
+      <button onclick="cargarCategoriaGeneral()" class="btnPrimary">
+          Cargar Categoría
+      </button>
+  </div>
+
+  <div class="rightZone">
+      <div class="juecesPanel">
+          Cantidad de jueces:
+          <select onchange="cambiarJueces(this.value)">
+              <option value="3">3 Jueces</option>
+              <option value="4">4 Jueces</option>
+          </select>
+      </div>
+
+      <div class="modoInline">
+          <select id="modoSelect">
+              <option value="combate">Combate</option>
+              <option value="formas">Formas</option>
+          </select>
+          <button onclick="cambiarModo()">Cambiar</button>
+      </div>
+  </div>
+
+</div>
+
+
+
+<!-- ================= COMBATE ================= -->
+<div id="pantallaCombate">
+
+<div id="timer" class="timer">00:00</div>
+
+<div id="infoCombate" class="infoCombate"></div>
+
+<audio id="beepFin" src="sports-horn.wav" preload="auto"></audio>
+
+<div id="judgesContainer"></div>
+
+<div id="center">
+
+  <!-- ROJO -->
+  <div class="competidor">
+    <div id="nombreRojo" class="nombreInput">Rojo</div>
+
+    <div class="circle red">
+        <span id="countRed">0</span>
+    </div>
+
+    <div class="total" id="totalRed">0</div>
+
+    <div class="faltas" id="faltasRed">Faltas: ⚪⚪⚪</div>
+
+    <button onclick="fault('red')" class="fault red">Falta Rojo</button>
+  </div>
+
+  <img id="logoEscuela" src="escudo.png" />
+
+  <!-- AZUL -->
+  <div class="competidor">
+    <div id="nombreAzul" class="nombreInput">Azul</div>
+
+    <div class="circle blue">
+        <span id="countBlue">0</span>
+    </div>
+
+    <div class="total" id="totalBlue">0</div>
+
+    <div class="faltas" id="faltasBlue">Faltas: ⚪⚪⚪</div>
+
+    <button onclick="fault('blue')" class="fault blue">Falta Azul</button>
+  </div>
+
+</div>
+
+<div id="phaseLabel"></div>
+<div id="resultadoFinal"></div>
+
+<div class="bottomButtons">
+    <button onclick="iniciarCombate()">Iniciar combate</button>
+    <button id="btnTiebreak" onclick="startTiebreak()" style="display:none;">
+        Desempate 30s
+    </button>
+    <button onclick="siguienteCombate()">Siguiente Combate</button>
+</div>
+
+<div id="alertaPenalizacion" class="alerta"></div>
+
+</div>
+
+
+<!-- ================= FORMAS ================= -->
+<div id="pantallaFormas" style="display:none;">
+
+    <div class="header">
+        <div id="categoriaFormas"></div>
+        <div id="rondaFormas"></div>
+    </div>
+
+    <div class="topBarFormas">
+        <select id="selectCategoriaFormas"></select>
+
+        <button onclick="cargarCategoriaFormas()" class="btnLoad">
+            CARGAR CATEGORÍA
+        </button>
+    </div>
+
+    <div class="vsContainer">
+
+        <div class="competidor rojo">
+            <div id="nombreRojoFormas" class="nombre"></div>
+            <button onclick="ganador('red')" class="btnRed">
+                GANADOR ROJO
+            </button>
+        </div>
+
+        <div class="vs">VS</div>
+
+        <div class="competidor azul">
+            <div id="nombreAzulFormas" class="nombre"></div>
+            <button onclick="ganador('blue')" class="btnBlue">
+                GANADOR AZUL
+            </button>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <button onclick="siguienteCombateFormas()" class="btnNext">
+            SIGUIENTE COMBATE
+        </button>
+    </div>
+
+    <div id="overlayGanadorFormas" class="overlay hidden">
+        <div id="textoGanadorFormas"></div>
+    </div>
+
+</div>
+
+</body>
+</html>

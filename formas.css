@@ -1,0 +1,171 @@
+body{
+    margin:0;
+    color:white;
+    font-family:Arial, sans-serif;
+    text-align:center;
+}
+
+.header{
+    padding:20px;
+    font-size:28px;
+    font-weight:bold;
+}
+
+.vsContainer{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:60vh;
+    gap:80px;
+}
+
+.competidor{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:30px;
+}
+
+.competidor div{
+    font-size:32px;
+    font-weight:bold;
+}
+
+.rojo div{
+    color:#ff3c3c;
+}
+
+.azul div{
+    color:#3ca0ff;
+}
+
+.vs{
+    font-size:40px;
+    opacity:0.5;
+    color: #222;
+}
+
+button{
+    padding:15px 30px;
+    font-size:18px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+button:hover{
+    transform:scale(1.05);
+}
+
+.btnRed{
+    background:#c40000;
+    color:white;
+}
+
+.btnBlue{
+    background:#0056c4;
+    color:white;
+}
+
+.btnNext{
+    background:#444;
+    color:white;
+    margin-top:20px;
+}
+
+.nombre{
+    font-size:48px;
+    font-weight:bold;
+    margin-bottom:30px;
+    letter-spacing:1px;
+}
+
+.rojo .nombre{
+    color:#ff4040;
+}
+
+.azul .nombre{
+    color:#3ca0ff;
+}
+
+.nombre{
+    animation:fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(20px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+.topBarFormas{
+    position:absolute;
+    top:20px;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:15px;
+}
+
+.btnLoad{
+    background:#222;
+    color:white;
+    padding:10px 20px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.btnLoad:hover{
+    background:#444;
+}
+
+#categoria {
+    margin-top: 60px;
+    color: #222;
+}
+
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.4s ease;
+}
+
+.overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#textoGanadorFormas {
+    font-size: 70px;
+    font-weight: bold;
+    text-align: center;
+    animation: zoomIn 0.5s ease;
+}
+
+.ganadorRojo {
+    color: #ff3b3b;
+    text-shadow: 0 0 20px #ff0000;
+}
+
+.ganadorAzul {
+    color: #3b8cff;
+    text-shadow: 0 0 20px #0066ff;
+}
+
+@keyframes zoomIn {
+    from {
+        transform: scale(0.6);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
